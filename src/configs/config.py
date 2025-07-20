@@ -24,4 +24,10 @@ yaml_configs = None
 with open(os.path.join(project_path, "src", "configs", "config_dev.yaml")) as f:
     yaml_configs = yaml.load(f, Loader=yaml.FullLoader)
 
-logger.info("all configs loaded")
+if "gemini" in yaml_configs and "api-key" in yaml_configs["gemini"]:
+    api_key = os.environ.get(yaml_configs["gemini"]["api-key"])
+    if api_key:
+        yaml_configs["gemini"]["api-key"] = api_key 
+        logger.info(f"EnvironmenT variable {yaml_configs['gemini']['api-key'][:5]}xxxxxx.... found, using the value from environment variable")
+    else:
+        logger.warning(f"Environment variable {yaml_configs['gemini']['api-key']} not found , using valud from config file")
