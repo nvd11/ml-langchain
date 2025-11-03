@@ -8,5 +8,6 @@ modeling:
   model1:
     table1: DS1.tb_model1_house_price
 
-gemini:
-  api-key: "GEMINI-API-KEY"
+deepseek:
+  api-key: "DEEPSEEK_API_KEY"
+  base-url: "https://api.deepseek.com"

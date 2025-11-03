@@ -2,6 +2,9 @@ import yaml
 import os
 import sys
 from loguru import logger
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # append project path to sys.path
 script_path = os.path.abspath(__file__)
@@ -31,3 +34,11 @@ if "gemini" in yaml_configs and "api-key" in yaml_configs["gemini"]:
         logger.info(f"EnvironmenT variable {yaml_configs['gemini']['api-key'][:5]}xxxxxx.... found, using the value from environment variable")
     else:
         logger.warning(f"Environment variable {yaml_configs['gemini']['api-key']} not found , using valud from config file")
+
+if "deepseek" in yaml_configs and "api-key" in yaml_configs["deepseek"]:
+    api_key = os.environ.get(yaml_configs["deepseek"]["api-key"])
+    if api_key:
+        yaml_configs["deepseek"]["api-key"] = api_key
+        logger.info(f"Environment variable for DeepSeek found, using the value from environment variable")
+    else:
+        logger.warning(f"Environment variable {yaml_configs['deepseek']['api-key']} not found, using value from config file")
