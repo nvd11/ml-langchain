@@ -11,10 +11,11 @@ class CustomGeminiChatModel(BaseChatModel):
     api_key: str
     model_name: str
     base_url: str
+    max_tokens: int
 
-    def __init__(self, api_key: str, model_name: str, **kwargs):
+    def __init__(self, api_key: str, model_name: str, max_tokens: int, **kwargs):
         base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-        super().__init__(api_key=api_key, model_name=model_name, base_url=base_url, **kwargs)
+        super().__init__(api_key=api_key, model_name=model_name, base_url=base_url, max_tokens=max_tokens, **kwargs)
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         # httpx 会自动使用 https_proxy 环境变量
@@ -26,7 +27,10 @@ class CustomGeminiChatModel(BaseChatModel):
         json_data = {
             "contents": [{
                 "parts": [{"text": prompt}]
-            }]
+            }],
+            "generationConfig": {
+                "maxOutputTokens": self.max_tokens
+            }
         }
         
         response = client.post(
@@ -49,14 +53,18 @@ class CustomGeminiChatModel(BaseChatModel):
         return "custom_gemini"
 
 class GeminiChatModelFactory(LLMChatModelFactory):
-    def __init__(self, api_key=yaml_configs["gemini"]["api-key"]):
+    def __init__(self, 
+                 api_key=yaml_configs["gemini"]["api-key"],
+                 max_tokens=yaml_configs["gemini"]["max-tokens"]):
         self.api_key = api_key
+        self.max_tokens = max_tokens
 
     @override
     def build(self) -> BaseChatModel:
         # 使用我们自己的包装类，而不是 LangChain 的类
         llm = CustomGeminiChatModel(
             api_key=self.api_key,
-            model_name="gemini-2.0-flash"
+            model_name="gemini-2.0-flash",
+            max_tokens=self.max_tokens
         )
         return llm

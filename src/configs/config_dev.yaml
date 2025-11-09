@@ -10,6 +10,7 @@ modeling:
 
 gemini:
   api-key: "GEMINI-API-KEY"
+  max-tokens: 8192
   
 deepseek:
   api-key: "DEEPSEEK_API_KEY"
